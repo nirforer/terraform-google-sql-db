@@ -26,7 +26,7 @@ provider "random" {
   version = "~> 2.2"
 }
 
-resource "random_id" "suffix" {
+resource "random_id" "instance_name_suffix" {
   byte_length = 5
 }
 
@@ -36,25 +36,18 @@ locals {
     "You cannot reuse an instance name for up to a week after you have deleted an instance."
     See https://cloud.google.com/sql/docs/mysql/delete-instance for details.
   */
-  instance_name = "instance"
-  network_name  = "pg-network"
+  instance_name = "${var.pg_ha_name}-${random_id.instance_name_suffix.hex}"
 }
 
-
-module "network-pg" {
-  source  = "terraform-google-modules/network/google"
-  version = "~> 1.4"
-
-  project_id   = var.project_id
-  network_name = local.network_name
-
-  subnets = []
+data "google_compute_network" "default" {
+  name = var.vpc_name
+  project = var.project_id
 }
 
 module "private-service-access" {
   source      = "../../modules/private_service_access"
   project_id  = var.project_id
-  vpc_network = module.network-pg.network_name
+  vpc_network = data.google_compute_network.default.name
 }
 
 module "pg" {
@@ -86,7 +79,7 @@ module "pg" {
   ip_configuration = {
     ipv4_enabled    = false
     require_ssl     = true
-    private_network = module.network-pg.network_self_link
+    private_network = data.google_compute_network.default.self_link
     authorized_networks = [
       {
         name  = "${var.project_id}-cidr"
@@ -105,7 +98,7 @@ module "pg" {
   read_replica_name_suffix                     = "-test"
   read_replica_size                            = 3
   read_replica_tier                            = "db-custom-2-13312"
-  read_replica_zones                           = "a,b,c"
+  read_replica_zones                           = "a"
   read_replica_activation_policy               = "ALWAYS"
   read_replica_crash_safe_replication          = true
   read_replica_disk_autoresize                 = true
@@ -141,9 +134,9 @@ module "pg" {
   }
 
   read_replica_ip_configuration = {
-    ipv4_enabled    = true
+    ipv4_enabled    = false
     require_ssl     = false
-    private_network = null
+    private_network = data.google_compute_network.default.self_link
     authorized_networks = [
       {
         name  = "${var.project_id}-cidr"

@@ -19,9 +19,20 @@ variable "project_id" {
   description = "The project to run tests against"
 }
 
+variable "vpc_name" {
+  type        = string
+  description = "The vpc to run tests against"
+}
+
 variable "pg_ha_name" {
   type        = string
   description = "The name for Cloud SQL instance"
+  default     = "tf-pg-ha"
+}
+
+variable "network_name" {
+  type        = string
+  description = "The name for the private VPC"
   default     = "tf-pg-ha"
 }
 
