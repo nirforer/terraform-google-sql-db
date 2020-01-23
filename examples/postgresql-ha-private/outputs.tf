@@ -25,3 +25,15 @@ output "name" {
 output "authorized_network" {
   value = var.pg_ha_external_ip_range
 }
+
+output "private_key" {
+  value = module.pg.client_ssl_certificate_private_key
+}
+
+output "client_certificate" {
+  value = module.pg.client_ssl_certificate_cert
+}
+
+output "server_certificate" {
+  value = module.pg.server_ssl_certificate_cert
+}

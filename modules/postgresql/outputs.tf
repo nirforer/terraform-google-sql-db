@@ -96,3 +96,22 @@ output "generated_user_password" {
   value       = random_id.user-password.hex
   sensitive   = true
 }
+
+output "client_ssl_certificate_private_key" {
+  description = "The auto generated default user password if not input password was provided"
+  value       = google_sql_ssl_cert.client_cert.private_key
+  # sensitive   = true
+}
+
+output "client_ssl_certificate_cert" {
+  description = "The auto generated default user password if not input password was provided"
+  value       = google_sql_ssl_cert.client_cert.cert
+  # sensitive   = true
+}
+
+output "server_ssl_certificate_cert" {
+  description = "The auto generated default user password if not input password was provided"
+  value       = google_sql_ssl_cert.client_cert.server_ca_cert
+  # sensitive   = true
+}
+

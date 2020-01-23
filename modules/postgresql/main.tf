@@ -149,6 +149,13 @@ resource "google_sql_user" "additional_users" {
   depends_on = [null_resource.module_depends_on, google_sql_database_instance.default]
 }
 
+resource "google_sql_ssl_cert" "client_cert" {
+  common_name = "client-name"
+  project = var.project_id
+  instance    = google_sql_database_instance.default.name
+  depends_on = [null_resource.module_depends_on, google_sql_database_instance.default]
+}
+
 resource "null_resource" "module_depends_on" {
   triggers = {
     value = length(var.module_depends_on)
