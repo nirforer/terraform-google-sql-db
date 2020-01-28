@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-variable "project_id" {
+variable "host_project_id" {
   type        = string
   description = "The project to run tests against"
+  default = ""
 }
 
 variable "vpc_name" {
   type        = string
   description = "The vpc to run tests against"
+}
+
+variable "service_project_id" {
+  type        = string
+  description = "The project to run tests against"
 }
 
 variable "pg_ha_name" {

@@ -97,21 +97,45 @@ output "generated_user_password" {
   sensitive   = true
 }
 
-output "client_ssl_certificate_private_key" {
+output "client_ssl_certificate_private_key_master" {
   description = "The auto generated default user password if not input password was provided"
-  value       = google_sql_ssl_cert.client_cert.private_key
+  value       = google_sql_ssl_cert.client_cert_master.private_key
   # sensitive   = true
 }
 
-output "client_ssl_certificate_cert" {
+output "client_ssl_certificate_cert_master" {
   description = "The auto generated default user password if not input password was provided"
-  value       = google_sql_ssl_cert.client_cert.cert
+  value       = google_sql_ssl_cert.client_cert_master.cert
   # sensitive   = true
 }
 
-output "server_ssl_certificate_cert" {
+output "server_ssl_certificate_cert_master" {
   description = "The auto generated default user password if not input password was provided"
-  value       = google_sql_ssl_cert.client_cert.server_ca_cert
+  value       = google_sql_ssl_cert.client_cert_master.server_ca_cert
+  # sensitive   = true
+}
+
+# output "rr_name" {
+#   description = "The name of the rr instance"
+#   value       = format("%s",google_sql_ssl_cert.client_cert_rr.*.common_name)
+#   # sensitive   = true
+# }
+
+output "client_ssl_certificate_private_key_rr" {
+  description = "The auto generated default user password if not input password was provided"
+  value       = google_sql_ssl_cert.client_cert_rr.*.private_key
+  # sensitive   = true
+}
+
+output "client_ssl_certificate_cert_rr" {
+  description = "The auto generated default user password if not input password was provided"
+  value       = google_sql_ssl_cert.client_cert_rr.*.cert
+  # sensitive   = true
+}
+
+output "server_ssl_certificate_cert_rr" {
+  description = "The auto generated default user password if not input password was provided"
+  value       = google_sql_ssl_cert.client_cert_rr.*.server_ca_cert
   # sensitive   = true
 }
 

@@ -16,7 +16,7 @@
 
 locals {
   ip_configuration_enabled = length(keys(var.ip_configuration)) > 0 ? true : false
-
+  
   ip_configurations = {
     enabled  = var.ip_configuration
     disabled = {}
@@ -24,7 +24,7 @@ locals {
 }
 
 resource "google_sql_database_instance" "default" {
-  project          = var.project_id
+  project          = var.service_project_id
   name             = var.name
   database_version = var.database_version
   region           = var.region
@@ -102,7 +102,7 @@ resource "google_sql_database_instance" "default" {
 
 resource "google_sql_database" "default" {
   name       = var.db_name
-  project    = var.project_id
+  project    = var.service_project_id
   instance   = google_sql_database_instance.default.name
   charset    = var.db_charset
   collation  = var.db_collation
@@ -111,7 +111,7 @@ resource "google_sql_database" "default" {
 
 resource "google_sql_database" "additional_databases" {
   count      = length(var.additional_databases)
-  project    = var.project_id
+  project    = var.service_project_id
   name       = var.additional_databases[count.index]["name"]
   charset    = lookup(var.additional_databases[count.index], "charset", "")
   collation  = lookup(var.additional_databases[count.index], "collation", "")
@@ -130,7 +130,7 @@ resource "random_id" "user-password" {
 
 resource "google_sql_user" "default" {
   name       = var.user_name
-  project    = var.project_id
+  project    = var.service_project_id
   instance   = google_sql_database_instance.default.name
   password   = var.user_password == "" ? random_id.user-password.hex : var.user_password
   depends_on = [null_resource.module_depends_on, google_sql_database_instance.default]
@@ -138,7 +138,7 @@ resource "google_sql_user" "default" {
 
 resource "google_sql_user" "additional_users" {
   count   = length(var.additional_users)
-  project = var.project_id
+  project = var.service_project_id
   name    = var.additional_users[count.index]["name"]
   password = lookup(
     var.additional_users[count.index],
@@ -149,9 +149,9 @@ resource "google_sql_user" "additional_users" {
   depends_on = [null_resource.module_depends_on, google_sql_database_instance.default]
 }
 
-resource "google_sql_ssl_cert" "client_cert" {
-  common_name = "client-name"
-  project = var.project_id
+resource "google_sql_ssl_cert" "client_cert_master" {
+  common_name = "terraform-generated"
+  project = var.service_project_id
   instance    = google_sql_database_instance.default.name
   depends_on = [null_resource.module_depends_on, google_sql_database_instance.default]
 }

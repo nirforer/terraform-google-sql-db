@@ -41,19 +41,19 @@ locals {
 
 data "google_compute_network" "default" {
   name = var.vpc_name
-  project = var.project_id
+  project = var.host_project_id == "" ? var.service_project_id : var.host_project_id
 }
 
 module "private-service-access" {
   source      = "../../modules/private_service_access"
-  project_id  = var.project_id
+  project_id  = var.host_project_id == "" ? var.service_project_id : var.host_project_id
   vpc_network = data.google_compute_network.default.name
 }
 
 module "pg" {
   source           = "../../modules/postgresql"
   name             = local.instance_name
-  project_id       = var.project_id
+  service_project_id = var.service_project_id
   database_version = "POSTGRES_9_6"
   region           = "us-central1"
 
@@ -80,12 +80,7 @@ module "pg" {
     ipv4_enabled    = false
     require_ssl     = true
     private_network = data.google_compute_network.default.self_link
-    authorized_networks = [
-      {
-        name  = "${var.project_id}-cidr"
-        value = var.pg_ha_external_ip_range
-      },
-    ]
+    authorized_networks = []
   }
 
   backup_configuration = {
@@ -120,7 +115,7 @@ module "pg" {
   ]
 
   read_replica_configuration = {
-    dump_file_path            = "gs://${var.project_id}.appspot.com/tmp"
+    dump_file_path            = "gs://${var.service_project_id}.appspot.com/tmp"
     connect_retry_interval    = 5
     ca_certificate            = null
     client_certificate        = null
@@ -135,14 +130,9 @@ module "pg" {
 
   read_replica_ip_configuration = {
     ipv4_enabled    = false
-    require_ssl     = false
+    require_ssl     = true
     private_network = data.google_compute_network.default.self_link
-    authorized_networks = [
-      {
-        name  = "${var.project_id}-cidr"
-        value = var.pg_ha_external_ip_range
-      },
-    ]
+    authorized_networks = []
   }
 
   db_name      = var.pg_ha_name
@@ -155,7 +145,7 @@ module "pg" {
       charset   = "UTF8"
       collation = "en_US.UTF8"
       instance  = local.instance_name
-      project   = var.project_id
+      project   = var.service_project_id
     },
   ]
 
@@ -164,14 +154,14 @@ module "pg" {
 
   additional_users = [
     {
-      project  = var.project_id
+      project  = var.service_project_id
       name     = "tftest2"
       password = "abcdefg"
       host     = "localhost"
       instance = local.instance_name
     },
     {
-      project  = var.project_id
+      project  = var.service_project_id
       name     = "tftest3"
       password = "abcdefg"
       host     = "localhost"

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-variable "project_id" {
+variable "service_project_id" {
   type        = string
   description = "The project ID to manage the Cloud SQL resources"
 }

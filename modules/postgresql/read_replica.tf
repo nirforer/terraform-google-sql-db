@@ -38,7 +38,7 @@ locals {
 
 resource "google_sql_database_instance" "replicas" {
   count                = var.read_replica_size
-  project              = var.project_id
+  project              = var.service_project_id
   name                 = "${var.name}-replica${var.read_replica_name_suffix}${count.index}"
   database_version     = var.database_version
   region               = var.region
@@ -124,5 +124,13 @@ resource "google_sql_database_instance" "replicas" {
     update = var.update_timeout
     delete = var.delete_timeout
   }
+}
+
+resource "google_sql_ssl_cert" "client_cert_rr" {
+  count                = var.read_replica_size
+  common_name = google_sql_database_instance.replicas[count.index].name
+  project = var.service_project_id
+  instance    = google_sql_database_instance.replicas[count.index].name
+  depends_on = [google_sql_database_instance.replicas]
 }
 

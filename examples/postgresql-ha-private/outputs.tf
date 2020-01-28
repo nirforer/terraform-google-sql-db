@@ -14,26 +14,43 @@
  * limitations under the License.
  */
 
-output "project_id" {
-  value = var.project_id
+output "service_project_id" {
+  value = var.service_project_id
 }
 
 output "name" {
   value = local.instance_name
 }
 
-output "authorized_network" {
-  value = var.pg_ha_external_ip_range
+# output "authorized_network" {
+#   value = var.pg_ha_external_ip_range
+# }
+
+output "private_key_master" {
+  value = module.pg.client_ssl_certificate_private_key_master
 }
 
-output "private_key" {
-  value = module.pg.client_ssl_certificate_private_key
+output "client_certificate_master" {
+  value = module.pg.client_ssl_certificate_cert_master
 }
 
-output "client_certificate" {
-  value = module.pg.client_ssl_certificate_cert
+output "server_certificate_master" {
+  value = module.pg.server_ssl_certificate_cert_master
 }
 
-output "server_certificate" {
-  value = module.pg.server_ssl_certificate_cert
+# output "rr_name" {
+#   value = module.pg.rr_name
+# }
+
+
+output "private_key_rr" {
+  value = module.pg.client_ssl_certificate_private_key_rr
+}
+
+output "client_certificate_rr" {
+  value = module.pg.client_ssl_certificate_cert_rr
+}
+
+output "server_certificate_rr" {
+  value = module.pg.server_ssl_certificate_cert_rr
 }
