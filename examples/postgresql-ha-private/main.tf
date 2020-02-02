@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+ terraform {
+  backend "gcs" {
+    bucket  = "tf-state-prod-nir-playground"
+    prefix  = "terraform/state"
+  }
+}
+
 provider "google" {
   version = "~> 2.13"
 }

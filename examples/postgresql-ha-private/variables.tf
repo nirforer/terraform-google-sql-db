@@ -42,8 +42,8 @@ variable "network_name" {
   default     = "tf-pg-ha"
 }
 
-variable "pg_ha_external_ip_range" {
-  type        = string
-  description = "The ip range to allow connecting from/to Cloud SQL"
-  default     = "192.10.10.10/32"
-}
+# variable "pg_ha_external_ip_range" {
+#   type        = string
+#   description = "The ip range to allow connecting from/to Cloud SQL"
+#   default     = "192.10.10.10/32"
+# }
